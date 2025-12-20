@@ -1,9 +1,6 @@
 "use client";
 import { useState } from 'react';
 
-// 👇 YENİ EKLENEN IMPORT (En tepede yer alıyor)
-import CareerCompass from "./components/CareerCompass";
-
 // Grafik kütüphaneleri
 import {
   Chart as ChartJS,
@@ -33,8 +30,8 @@ import {
   Loader2,
   DollarSign,
   Award,
-  Crown,       // Premium İkonu
-  Unlock       // Kilit Açık İkonu
+  Crown,        // Premium İkonu
+  Unlock        // Kilit Açık İkonu
 } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
@@ -54,7 +51,7 @@ export default function Home() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [testCompleted, setTestCompleted] = useState(false);
 
-  // --- DNA TEST SORULARI (Eski) ---
+  // --- DNA TEST SORULARI (Eski - Çalışan Hali) ---
   const questions = [
     { id: 1, text: "Belirsiz bir durumla karşılaştığında ilk tepkin ne olur?", options: ["Hemen aksiyon alır, yolda düzeltirim (Hız Odaklı).", "Önce tüm verileri toplar, analiz ederim (Analitik).", "Ekibimle konuşur, ortak karar alırım (Demokratik).", "Yöneticimden net talimat beklerim (Hiyerarşik)."] },
     { id: 2, text: "Seni en çok ne motive eder?", options: ["Zor ve karmaşık problemleri çözmek.", "İnsanlara yardım etmek ve mentörlük.", "Net, ölçülebilir başarılar ve yüksek kazanç.", "Sistemi kurmak, optimize etmek ve düzeni sağlamak."] },
@@ -360,13 +357,6 @@ export default function Home() {
                 </div>
             </div>
         )}
-
-
-        <div className="border-t border-gray-200 mt-12 pt-10 pb-10">
-            <CareerCompass />
-        </div>
-
-
       </main>
     </div>
   );
