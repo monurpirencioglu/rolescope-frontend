@@ -1,13 +1,11 @@
 import './globals.css'
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'RoleScope AI | Kariyer Asistanı',
-  description: 'AI destekli CV analizi ve kariyer pusulası',
+export const metadata = {
+  title: 'RoleScope AI',
+  description: 'AI destekli CV Analizi',
 }
 
 export default function RootLayout({
@@ -18,19 +16,6 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={inter.className}>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-VSP4HJQMVX"
-          strategy="afterInteractive"
-        />
-        <Script id="ga-script" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-VSP4HJQMVX');
-          `}
-        </Script>
-
         {children}
       </body>
     </html>
