@@ -1,12 +1,22 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: 'RoleScope AI | Kariyer Asistanı',
-  description: 'AI destekli CV analizi ve kariyer pusulası',
+  title: 'RoleScope AI | Premium Kariyer Asistanı',
+  description: 'AI destekli Hiring Manager simülasyonu ve Kariyer DNA analizi.',
 }
 
 export default function RootLayout({
@@ -16,7 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
+        {children}
+      </body>
     </html>
   )
 }
