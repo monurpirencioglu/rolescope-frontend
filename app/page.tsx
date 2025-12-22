@@ -14,17 +14,12 @@ export default function Home() {
   const [ilan, setIlan] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("cv");
+  const [activeTab, setActiveTab] = useState<"cv" | "dna">("cv");
   const [answers, setAnswers] = useState<any>({});
-  const [testCompleted, setTestCompleted] = useState(false);
 
   const handleAnalyze = async () => {
     setLoading(true);
     setResult(null);
-
-    if (window.gtag) {
-      window.gtag("event", activeTab === "cv" ? "cv_analysis_started" : "dna_analysis_started");
-    }
 
     const formData = new FormData();
     if (file) formData.append("cv", file);
@@ -37,19 +32,22 @@ export default function Home() {
 
     try {
       const endpoint = activeTab === "cv" ? "/analiz-et" : "/analiz-dna";
-      const res = await fetch(API_URL + endpoint, { method: "POST", body: formData });
+      const res = await fetch(API_URL + endpoint, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Backend hata döndü (${res.status})`);
+      }
 
       const text = await res.text();
-      if (!text) throw new Error("Backend boş yanıt döndü");
+      if (!text) {
+        throw new Error("Backend boş yanıt döndü");
+      }
 
       const data = JSON.parse(text);
-      if (data.error) throw new Error(data.message);
-
       setResult(data);
-
-      if (window.gtag) {
-        window.gtag("event", "analysis_success", { type: activeTab });
-      }
 
     } catch (e: any) {
       alert("Hata: " + e.message);
@@ -59,12 +57,25 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <main style={{ padding: 24 }}>
       <h1>RoleScope AI</h1>
+
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+      />
+
+      <br /><br />
+
       <button onClick={handleAnalyze} disabled={loading}>
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
-      {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
-    </div>
+
+      {result && (
+        <pre style={{ marginTop: 24 }}>
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      )}
+    </main>
   );
 }
