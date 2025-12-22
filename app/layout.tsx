@@ -18,11 +18,9 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={inter.className}>
-
-        {/* Google Analytics */}
         <Script
-          strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-VSP4HJQMVX"
+          strategy="afterInteractive"
         />
         <Script id="ga-script" strategy="afterInteractive">
           {`
