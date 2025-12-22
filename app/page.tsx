@@ -1,102 +1,92 @@
 "use client";
+
 import { useState } from "react";
+import {
+  FileText,
+  Brain,
+  Upload,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
 
-// Backend URL (Senin backend reponun adresi)
-const API_URL = "https://rolescope-backend.vercel.app"; 
+const API_URL = "https://rolescope-backend.vercel.app";
 
-// Kariyer Pusulası için 12 Soru
 const QUESTIONS = [
   "Karmaşık bir problemle karşılaştığında ilk tepkin ne olur?",
   "Bir grup projesinde genellikle hangi rolü üstlenirsin?",
-  "Seni en çok ne motive eder? (Para, başarı, özgürlük vb.)",
+  "Seni en çok ne motive eder?",
   "Baskı altında çalışma performansın nasıldır?",
   "Yeni bir şey öğrenirken izlediğin yöntem nedir?",
   "Risk alma konusunda kendini nerede görüyorsun?",
   "İş hayatında en tahammül edemediğin durum nedir?",
   "Beş yıl sonra kendini nerede görüyorsun?",
-  "Detaylara mı odaklanırsın yoksa büyük resme mi?",
-  "Eleştiri aldığında nasıl karşılık verirsin?",
-  "Rutin işleri mi seversin yoksa değişken projeleri mi?",
-  "Başarısız olduğunda nasıl toparlanırsın?"
+  "Detaylara mı yoksa büyük resme mi odaklanırsın?",
+  "Eleştiri aldığında nasıl tepki verirsin?",
+  "Rutin mi değişken işler mi?",
+  "Başarısızlık sonrası nasıl toparlanırsın?",
 ];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"cv" | "dna">("cv");
-  
-  // Ortak State'ler
+  const [tab, setTab] = useState<"cv" | "dna">("cv");
   const [file, setFile] = useState<File | null>(null);
+  const [jobDesc, setJobDesc] = useState("");
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
-  // CV Analiz State'leri
-  const [jobDesc, setJobDesc] = useState("");
-  const [cvResult, setCvResult] = useState<any>(null);
+  const [result, setResult] = useState<any>(null);
 
-  // DNA Analiz State'leri
-  const [answers, setAnswers] = useState<{[key: number]: string}>({});
-  const [dnaResult, setDnaResult] = useState<any>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) setFile(e.target.files[0]);
   };
 
-  const handleAnswerChange = (index: number, val: string) => {
-    setAnswers(prev => ({ ...prev, [index]: val }));
-  };
-
-  // 1. Fonksiyon: CV Analizi Yap (/analiz-et)
   const runCvAnalysis = async () => {
-    if (!file) { alert("Lütfen CV yükleyin!"); return; }
-    
-    setLoading(true); setError(""); setCvResult(null);
-    const formData = new FormData();
-    formData.append("cv", file);
-    formData.append("ilan", jobDesc);
+    if (!file) return setError("CV yüklemeden analiz yapılamaz.");
+
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    const fd = new FormData();
+    fd.append("cv", file);
+    fd.append("ilan", jobDesc);
 
     try {
       const res = await fetch(`${API_URL}/analiz-et`, {
         method: "POST",
-        body: formData
+        body: fd,
       });
-      if (!res.ok) throw new Error("Sunucu hatası oluştu.");
       const data = await res.json();
-      setCvResult(data);
-    } catch (err: any) {
-      setError(err.message || "Bir hata oluştu");
+      if (data.error) throw new Error(data.message);
+      setResult(data);
+    } catch (e: any) {
+      setError(e.message || "Analiz başarısız");
     } finally {
       setLoading(false);
     }
   };
 
-  // 2. Fonksiyon: Kariyer Pusulası (/analiz-dna)
   const runDnaAnalysis = async () => {
-    // 12 sorunun hepsi cevaplandı mı kontrolü (opsiyonel ama iyi olur)
-    if (Object.keys(answers).length < 12) {
-      alert("Lütfen tüm soruları cevaplayın.");
-      return;
-    }
+    if (Object.keys(answers).length < 12)
+      return setError("Tüm soruları cevaplamalısın.");
 
-    setLoading(true); setError(""); setDnaResult(null);
-    const formData = new FormData();
-    
-    // Backend answers'ı string olarak bekliyor, JSON.stringify şart!
-    formData.append("answers", JSON.stringify(answers));
-    
-    // CV varsa ekle, yoksa ekleme (Backend handle ediyor)
-    if (file) {
-      formData.append("cv", file);
-    }
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    const fd = new FormData();
+    fd.append("answers", JSON.stringify(answers));
+    if (file) fd.append("cv", file);
 
     try {
       const res = await fetch(`${API_URL}/analiz-dna`, {
         method: "POST",
-        body: formData
+        body: fd,
       });
-      if (!res.ok) throw new Error("Sunucu hatası oluştu.");
       const data = await res.json();
-      setDnaResult(data);
-    } catch (err: any) {
-      setError(err.message || "Bir hata oluştu");
+      if (data.error) throw new Error(data.message);
+      setResult(data);
+    } catch (e: any) {
+      setError(e.message || "Analiz başarısız");
     } finally {
       setLoading(false);
     }
@@ -104,118 +94,101 @@ export default function Home() {
 
   return (
     <main className="container">
+      {/* HEADER */}
       <header className="header">
-        <h1>🔭 RoleScope AI</h1>
-        <p>Yapay Zeka Destekli Kariyer Mimarı</p>
+        <h1>RoleScope AI</h1>
+        <p>Hiring Manager Simülasyonu & Kariyer DNA Analizi</p>
       </header>
 
-      {/* TAB BUTONLARI */}
+      {/* TABS */}
       <div className="tabs">
-        <button 
-          className={`tab-btn ${activeTab === 'cv' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('cv'); setError(""); }}
+        <button
+          className={`tab-btn ${tab === "cv" ? "active" : ""}`}
+          onClick={() => setTab("cv")}
         >
-          📄 İş Başvurusu Analizi
+          <FileText size={18} /> CV Analizi
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'dna' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('dna'); setError(""); }}
+        <button
+          className={`tab-btn ${tab === "dna" ? "active" : ""}`}
+          onClick={() => setTab("dna")}
         >
-          🧬 Kariyer Pusulası (DNA)
+          <Brain size={18} /> Kariyer DNA
         </button>
       </div>
 
-      <div className="card">
-        {/* === MOD 1: CV ANALİZİ === */}
-        {activeTab === 'cv' && (
-          <div className="fade-in">
+      {/* PANEL */}
+      <section className="glass-panel">
+        {tab === "cv" && (
+          <>
             <div className="form-group">
-              <label>1. CV'nizi Yükleyin (PDF/Word)</label>
-              <input type="file" onChange={handleFileChange} accept=".pdf,.docx" />
+              <label>CV Yükle (PDF / DOCX)</label>
+              <input type="file" onChange={handleFile} />
             </div>
+
             <div className="form-group">
-              <label>2. İş İlanı Metni (Opsiyonel)</label>
-              <textarea 
-                placeholder="Başvurduğunuz ilanı buraya yapıştırın..." 
+              <label>İş İlanı (Opsiyonel)</label>
+              <textarea
                 value={jobDesc}
                 onChange={(e) => setJobDesc(e.target.value)}
+                placeholder="İlan metni buraya..."
               />
             </div>
-            <button className="action-btn" onClick={runCvAnalysis} disabled={loading}>
-              {loading ? "Analiz Yapılıyor..." : "🚀 Uyum Analizini Başlat"}
+
+            <button
+              className="action-btn"
+              disabled={loading}
+              onClick={runCvAnalysis}
+            >
+              <Sparkles size={18} />{" "}
+              {loading ? "Analiz Yapılıyor..." : "ATS & Hiring Manager Analizi"}
             </button>
-          </div>
+          </>
         )}
 
-        {/* === MOD 2: KARİYER PUSULASI === */}
-        {activeTab === 'dna' && (
-          <div className="fade-in">
-             <div className="form-group">
-              <label>CV'niz (Varsa - Analizi Güçlendirir)</label>
-              <input type="file" onChange={handleFileChange} accept=".pdf,.docx" />
+        {tab === "dna" && (
+          <>
+            <div className="form-group">
+              <label>CV (Varsa)</label>
+              <input type="file" onChange={handleFile} />
             </div>
-            
-            <h3>Kariyer Kişilik Testi (12 Soru)</h3>
+
             {QUESTIONS.map((q, i) => (
               <div key={i} className="question-box">
                 <label>{i + 1}. {q}</label>
-                <input 
-                  type="text" 
-                  placeholder="Cevabınız..."
-                  style={{marginTop: '5px'}}
-                  onChange={(e) => handleAnswerChange(i, e.target.value)}
+                <input
+                  type="text"
+                  onChange={(e) =>
+                    setAnswers((p) => ({ ...p, [i]: e.target.value }))
+                  }
                 />
               </div>
             ))}
-            
-            <button className="action-btn" onClick={runDnaAnalysis} disabled={loading}>
-              {loading ? "Kişilik Analizi Yapılıyor..." : "🧬 Kariyer DNA'mı Çıkar"}
+
+            <button
+              className="action-btn"
+              disabled={loading}
+              onClick={runDnaAnalysis}
+            >
+              <Brain size={18} />{" "}
+              {loading ? "Analiz Ediliyor..." : "Kariyer DNA'mı Çöz"}
             </button>
-          </div>
+          </>
         )}
-      </div>
+      </section>
 
-      {/* HATA MESAJI */}
-      {error && <div className="error-box" style={{color: 'red', textAlign: 'center', marginTop: '20px'}}>{error}</div>}
-
-      {/* === SONUÇ EKRANI: CV === */}
-      {cvResult && activeTab === 'cv' && (
-        <div className="card result-box">
-          <div className="score-circle">
-            <div>Uyum Skoru</div>
-            <div className="score">%{cvResult.uyum_skoru?.toplam || 0}</div>
-          </div>
-          
-          <h3 className="section-title">💪 Güçlü Yönler</h3>
-          <ul>
-            {cvResult.guclu_yonler?.map((item: string, i: number) => <li key={i}>{item}</li>)}
-          </ul>
-
-          <h3 className="section-title">⚠️ Gelişim Alanları</h3>
-          <ul>
-            {cvResult.zayif_yonler?.map((item: string, i: number) => <li key={i}>{item}</li>)}
-          </ul>
-
-           <h3 className="section-title">💡 İyileştirme Önerileri</h3>
-          <ul>
-            {cvResult.iyilestirme_onerileri?.map((item: string, i: number) => <li key={i}>{item}</li>)}
-          </ul>
+      {/* ERROR */}
+      {error && (
+        <div className="result-card glow-yellow" style={{ marginTop: 30 }}>
+          <AlertTriangle /> {error}
         </div>
       )}
 
-      {/* === SONUÇ EKRANI: DNA === */}
-      {dnaResult && activeTab === 'dna' && (
-        <div className="card result-box">
-          <h2 style={{color: '#818cf8', textAlign: 'center'}}>Senin Kariyer Arketipin: {dnaResult.arketip_profili?.ana}</h2>
-          
-          <div style={{background: '#334155', padding: '15px', borderRadius: '8px', margin: '20px 0'}}>
-            {dnaResult.karakter_ozeti}
-          </div>
-
-          <h3 className="section-title">🗺️ Kariyer Stratejisi</h3>
-          <p><strong>1 Yıl:</strong> {dnaResult.kariyer_stratejisi?.["1_yil"]}</p>
-          <p><strong>3 Yıl:</strong> {dnaResult.kariyer_stratejisi?.["3_yil"]}</p>
-          <p><strong>5 Yıl:</strong> {dnaResult.kariyer_stratejisi?.["5_yil"]}</p>
+      {/* RESULT */}
+      {result && (
+        <div className="results-container">
+          <pre className="result-card glow-purple">
+            {JSON.stringify(result, null, 2)}
+          </pre>
         </div>
       )}
     </main>
