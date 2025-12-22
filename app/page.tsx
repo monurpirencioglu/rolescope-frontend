@@ -1,11 +1,6 @@
 "use client";
-import { useState } from "react";
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
+import { useState } from "react";
 
 export default function Home() {
   const API_URL = "https://rolescope-backend.onrender.com";
@@ -14,68 +9,87 @@ export default function Home() {
   const [ilan, setIlan] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<"cv" | "dna">("cv");
-  const [answers, setAnswers] = useState<any>({});
+  const [error, setError] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
     setLoading(true);
     setResult(null);
-
-    const formData = new FormData();
-    if (file) formData.append("cv", file);
-
-    if (activeTab === "cv") {
-      formData.append("ilan", ilan);
-    } else {
-      formData.append("answers", JSON.stringify(answers));
-    }
+    setError(null);
 
     try {
-      const endpoint = activeTab === "cv" ? "/analiz-et" : "/analiz-dna";
-      const res = await fetch(API_URL + endpoint, {
+      const formData = new FormData();
+
+      // CV varsa ekle
+      if (file) {
+        formData.append("cv", file);
+        formData.append("ilan", ilan || "Genel değerlendirme yap");
+      }
+
+      // CV yoksa ENGELLE (kritik fix)
+      if (!file) {
+        throw new Error("Lütfen bir CV dosyası yükleyin.");
+      }
+
+      const res = await fetch(`${API_URL}/analiz-et`, {
         method: "POST",
         body: formData,
       });
 
       if (!res.ok) {
-        throw new Error(`Backend hata döndü (${res.status})`);
+        throw new Error("Backend hata döndü");
       }
 
-      const text = await res.text();
-      if (!text) {
-        throw new Error("Backend boş yanıt döndü");
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(data.detail || "Analiz sırasında hata oluştu");
       }
 
-      const data = JSON.parse(text);
       setResult(data);
 
-    } catch (e: any) {
-      alert("Hata: " + e.message);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main style={{ padding: 24 }}>
+    <div style={{ padding: 24, maxWidth: 800, margin: "0 auto" }}>
       <h1>RoleScope AI</h1>
 
       <input
         type="file"
+        accept=".pdf,.docx"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
       />
 
-      <br /><br />
+      <textarea
+        placeholder="İş ilanı (opsiyonel)"
+        value={ilan}
+        onChange={(e) => setIlan(e.target.value)}
+        style={{ width: "100%", marginTop: 12 }}
+      />
 
-      <button onClick={handleAnalyze} disabled={loading}>
+      <button
+        onClick={handleAnalyze}
+        disabled={loading}
+        style={{ marginTop: 12 }}
+      >
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
 
+      {error && (
+        <p style={{ color: "red", marginTop: 12 }}>
+          ❌ {error}
+        </p>
+      )}
+
       {result && (
-        <pre style={{ marginTop: 24 }}>
+        <pre style={{ marginTop: 20, background: "#f5f5f5", padding: 16 }}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}
-    </main>
+    </div>
   );
 }
