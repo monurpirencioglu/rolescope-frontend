@@ -1,11 +1,12 @@
 import './globals.css'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: 'RoleScope AI',
-  description: 'AI destekli CV Analizi',
+export const metadata: Metadata = {
+  title: 'RoleScope AI | Kariyer Asistanı',
+  description: 'AI destekli CV analizi ve kariyer pusulası',
 }
 
 export default function RootLayout({
