@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 
 export default function Home() {
@@ -9,28 +8,22 @@ export default function Home() {
   const [ilan, setIlan] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
+    if (!file) {
+      alert("Lütfen CV yükleyin");
+      return;
+    }
+
     setLoading(true);
     setResult(null);
-    setError(null);
+
+    const formData = new FormData();
+    formData.append("cv", file);
+    formData.append("ilan", ilan);
 
     try {
-      const formData = new FormData();
-
-      // CV varsa ekle
-      if (file) {
-        formData.append("cv", file);
-        formData.append("ilan", ilan || "Genel değerlendirme yap");
-      }
-
-      // CV yoksa ENGELLE (kritik fix)
-      if (!file) {
-        throw new Error("Lütfen bir CV dosyası yükleyin.");
-      }
-
-      const res = await fetch(`${API_URL}/analiz-et`, {
+      const res = await fetch(API_URL + "/analiz-et", {
         method: "POST",
         body: formData,
       });
@@ -40,22 +33,17 @@ export default function Home() {
       }
 
       const data = await res.json();
-
-      if (data.error) {
-        throw new Error(data.detail || "Analiz sırasında hata oluştu");
-      }
-
       setResult(data);
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      alert("Hata: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 800, margin: "0 auto" }}>
+    <div style={{ padding: 20 }}>
       <h1>RoleScope AI</h1>
 
       <input
@@ -64,29 +52,24 @@ export default function Home() {
         onChange={(e) => setFile(e.target.files?.[0] || null)}
       />
 
+      <br /><br />
+
       <textarea
         placeholder="İş ilanı (opsiyonel)"
         value={ilan}
         onChange={(e) => setIlan(e.target.value)}
-        style={{ width: "100%", marginTop: 12 }}
+        rows={4}
+        style={{ width: "100%" }}
       />
 
-      <button
-        onClick={handleAnalyze}
-        disabled={loading}
-        style={{ marginTop: 12 }}
-      >
+      <br /><br />
+
+      <button onClick={handleAnalyze} disabled={loading}>
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
 
-      {error && (
-        <p style={{ color: "red", marginTop: 12 }}>
-          ❌ {error}
-        </p>
-      )}
-
       {result && (
-        <pre style={{ marginTop: 20, background: "#f5f5f5", padding: 16 }}>
+        <pre style={{ marginTop: 20 }}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}
