@@ -11,65 +11,58 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
 
   const handleAnalyze = async () => {
-    if (!file) {
-      alert("Lütfen CV yükle");
-      return;
-    }
-
     setLoading(true);
     setResult(null);
 
     const formData = new FormData();
-    formData.append("cv", file);
+    if (file) formData.append("cv", file);
     formData.append("ilan", ilan);
 
     try {
-      const res = await fetch(API_URL + "/analiz-et", {
+      const res = await fetch(`${API_URL}/analiz-et`, {
         method: "POST",
         body: formData,
       });
 
-      const text = await res.text();
-      if (!text) throw new Error("Boş yanıt");
+      if (!res.ok) {
+        throw new Error("Backend hata döndü");
+      }
 
-      const data = JSON.parse(text);
+      const data = await res.json();
       setResult(data);
-
-    } catch (err: any) {
-      alert("Hata: " + err.message);
+    } catch (e: any) {
+      alert("Hata: " + e.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main style={{ padding: 40, maxWidth: 800 }}>
+    <main style={{ padding: 24 }}>
       <h1>RoleScope AI</h1>
 
-      <div style={{ marginBottom: 20 }}>
-        <input
-          type="file"
-          accept=".pdf,.docx"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-        />
-      </div>
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+      />
 
-      <div style={{ marginBottom: 20 }}>
-        <textarea
-          placeholder="İş ilanını buraya yapıştır (opsiyonel)"
-          value={ilan}
-          onChange={(e) => setIlan(e.target.value)}
-          rows={6}
-          style={{ width: "100%" }}
-        />
-      </div>
+      <br /><br />
+
+      <textarea
+        placeholder="İş ilanı (opsiyonel)"
+        value={ilan}
+        onChange={(e) => setIlan(e.target.value)}
+        style={{ width: "100%", height: 120 }}
+      />
+
+      <br /><br />
 
       <button onClick={handleAnalyze} disabled={loading}>
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
 
       {result && (
-        <pre style={{ marginTop: 30 }}>
+        <pre style={{ marginTop: 24 }}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}
