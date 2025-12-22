@@ -17,7 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <head>
+      <body className={inter.className}>
+
         {/* Google Analytics */}
         <Script
           strategy="afterInteractive"
@@ -31,9 +32,7 @@ export default function RootLayout({
             gtag('config', 'G-VSP4HJQMVX');
           `}
         </Script>
-      </head>
 
-      <body className={inter.className}>
         {children}
       </body>
     </html>
