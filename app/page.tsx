@@ -11,7 +11,7 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     if (!file) {
-      alert("Lütfen CV yükleyin");
+      alert("Lütfen CV yükle");
       return;
     }
 
@@ -28,11 +28,10 @@ export default function Home() {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Backend hata döndü");
-      }
+      const text = await res.text();
+      if (!text) throw new Error("Backend boş yanıt döndü");
 
-      const data = await res.json();
+      const data = JSON.parse(text);
       setResult(data);
 
     } catch (e: any) {
@@ -43,36 +42,36 @@ export default function Home() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <main style={{ padding: 24 }}>
       <h1>RoleScope AI</h1>
 
-      <input
-        type="file"
-        accept=".pdf,.docx"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-      />
+      <div style={{ marginTop: 16 }}>
+        <input
+          type="file"
+          accept=".pdf,.docx"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </div>
 
-      <br /><br />
+      <div style={{ marginTop: 16 }}>
+        <textarea
+          placeholder="İş ilanı (opsiyonel)"
+          value={ilan}
+          onChange={(e) => setIlan(e.target.value)}
+          rows={5}
+          style={{ width: "100%" }}
+        />
+      </div>
 
-      <textarea
-        placeholder="İş ilanı (opsiyonel)"
-        value={ilan}
-        onChange={(e) => setIlan(e.target.value)}
-        rows={4}
-        style={{ width: "100%" }}
-      />
-
-      <br /><br />
-
-      <button onClick={handleAnalyze} disabled={loading}>
+      <button onClick={handleAnalyze} disabled={loading} style={{ marginTop: 16 }}>
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
 
       {result && (
-        <pre style={{ marginTop: 20 }}>
+        <pre style={{ marginTop: 24 }}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}
-    </div>
+    </main>
   );
 }
