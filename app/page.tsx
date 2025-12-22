@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 export default function Home() {
@@ -29,23 +30,23 @@ export default function Home() {
       });
 
       const text = await res.text();
-      if (!text) throw new Error("Backend boş yanıt döndü");
+      if (!text) throw new Error("Boş yanıt");
 
       const data = JSON.parse(text);
       setResult(data);
 
-    } catch (e: any) {
-      alert("Hata: " + e.message);
+    } catch (err: any) {
+      alert("Hata: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main style={{ padding: 24 }}>
+    <main style={{ padding: 40, maxWidth: 800 }}>
       <h1>RoleScope AI</h1>
 
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginBottom: 20 }}>
         <input
           type="file"
           accept=".pdf,.docx"
@@ -53,22 +54,22 @@ export default function Home() {
         />
       </div>
 
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginBottom: 20 }}>
         <textarea
-          placeholder="İş ilanı (opsiyonel)"
+          placeholder="İş ilanını buraya yapıştır (opsiyonel)"
           value={ilan}
           onChange={(e) => setIlan(e.target.value)}
-          rows={5}
+          rows={6}
           style={{ width: "100%" }}
         />
       </div>
 
-      <button onClick={handleAnalyze} disabled={loading} style={{ marginTop: 16 }}>
+      <button onClick={handleAnalyze} disabled={loading}>
         {loading ? "Analiz Ediliyor..." : "Sonuçları Göster"}
       </button>
 
       {result && (
-        <pre style={{ marginTop: 24 }}>
+        <pre style={{ marginTop: 30 }}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}
