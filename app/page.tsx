@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // useEffect eklendi
 
 // Grafik kütüphaneleri
 import {
@@ -33,13 +33,21 @@ import {
   Award,
   Crown,
   Unlock,
-  Lightbulb // Yeni eklendi (Kariyer Hamlesi için)
+  Lightbulb 
 } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
 
+// === STRATEJİK YÜKLEME MESAJLARI ===
+const loadingMessages = [
+  "Kariyer Stratejisti CV'ndeki teknik satır aralarını okuyor...",
+  "Performans Psikoloğu karakter testindeki zihinsel kalıpları ağırlıklandırıyor...",
+  "Potansiyel Avcısı, geçmişin ile gelecekteki 'en iyi versiyonun' arasındaki bağı kuruyor...",
+  "Silikon Vadisi standartlarında mülakat kozların ve risk analizin hazırlanıyor...",
+  "Stratejik yol haritan nihai formuna kavuşturuluyor..."
+];
+
 export default function Home() {
-  // BURAYI KENDİ RENDER URL'İN İLE GÜNCELLEMEYİ UNUTMA!
   const API_URL = "https://rolescope-backend.onrender.com";
 
   // --- STATE ---
@@ -48,13 +56,25 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("cv");
+  const [messageIndex, setMessageIndex] = useState(0); // Mesaj indeksi için state
 
   // DNA Test State
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [testCompleted, setTestCompleted] = useState(false);
 
-  // --- DNA TEST SORULARI (GÜNCELLENMİŞ 12 SORULUK SET) ---
+  // --- LOADING MESAJ DÖNGÜSÜ ---
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (loading) {
+      interval = setInterval(() => {
+        setMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 3000); // Her 3 saniyede bir mesajı değiştir
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  // --- DNA TEST SORULARI ---
   const questions = [
     { id: 1, text: "Belirsiz bir durumla karşılaştığında ilk tepkin ne olur?", options: ["Hemen aksiyon alır, yolda düzeltirim (Hız Odaklı).", "Önce tüm verileri toplar, analiz ederim (Analitik).", "Ekibimle konuşur, ortak karar alırım (Demokratik).", "Yöneticimden net talimat beklerim (Hiyerarşik)."] },
     { id: 2, text: "Seni en çok ne motive eder?", options: ["Zor ve karmaşık problemleri çözmek.", "İnsanlara yardım etmek ve mentörlük.", "Net, ölçülebilir başarılar ve yüksek kazanç.", "Sistemi kurmak, optimize etmek ve düzeni sağlamak."] },
@@ -64,7 +84,6 @@ export default function Home() {
     { id: 6, text: "Risk alma yaklaşımın nedir?", options: ["Büyük risk, büyük ödül. Kaybetmekten korkmam.", "Hesaplanmış riskleri alırım, B planım vardır.", "Mevcut yapıyı korumak benim için daha önemlidir.", "Riskten kaçınır, garanti ve denenmiş yolları seçerim."] },
     { id: 7, text: "Yöneticinden sert bir olumsuz geri bildirim (feedback) aldığında ne yaparsın?", options: ["Önce savunmaya geçerim, haksızlık yapıldığını düşünürüm.", "Duygusal olarak düşerim ama sonra toparlarım.", "Teşekkür eder, hemen düzeltmek için plan yaparım (Gelişim Odaklı).", "Verilerle hatanın bende olmadığını kanıtlamaya çalışırım."] },
     { id: 8, text: "Zaman çok kısıtlı ve elinde yeterli veri yok. Kritik bir karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime ve tecrübeme güvenir, kararı veririm.", "Kararı erteler, ne pahasına olursa olsun veri bulmaya çalışırım.", "Hızlıca küçük bir deney (test) yapar, sonuca göre ilerlerim.", "Sorumluluğu tek başıma almaz, ekibe veya yöneticiye danışırım."] },
-    // --- YENİ EKLENEN DERİNLEŞTİRİCİ SORULAR (9-12) ---
     { id: 9, text: "Yeni ve zor bir teknoloji/konu öğrenmen gerektiğinde yöntemin nedir?", options: ["Dokümantasyonu baştan sona okurum (Teorik).", "Hemen bir proje yapmaya başlar, hata yaparak öğrenirim (Pratik).", "Bilen birine sorar veya eğitim videosu izlerim (Görsel/İşitsel).", "Önce mantığını kavrar, sonra detaylara inerim (Bütüncül)."] },
     { id: 10, text: "Bir takım içinde genellikle hangi rolü üstlenirsin?", options: ["Liderlik eden ve yön gösteren (Kaptan).", "Ortamı yumuşatan ve bağları kuran (Diplomat).", "Eksikleri gören ve eleştirel bakan (Kalite Kontrol).", "Verilen görevi sessizce ve eksiksiz yapan (Uygulayıcı)."] },
     { id: 11, text: "Seni iş hayatında en çok ne 'tüketir' (Burnout sebebi)?", options: ["Mikro yönetim ve sürekli kontrol edilmek.", "Yaptığım işin anlamsız olduğunu hissetmek.", "Aşırı belirsizlik ve kaos.", "Sürekli tekrarlayan, monoton işler."] },
@@ -89,6 +108,7 @@ export default function Home() {
   const handleAnalyze = async () => {
     if (!file && activeTab === "cv") return alert("Lütfen devam etmeden önce CV dosyanızı yükleyin.");
     setLoading(true);
+    setMessageIndex(0); // Mesaj döngüsünü sıfırla
     setResult(null);
 
     const formData = new FormData();
@@ -103,7 +123,7 @@ export default function Home() {
     try {
       const endpoint = activeTab === "cv" ? "/analiz-et" : "/analiz-dna";
       const response = await fetch(`${API_URL}${endpoint}`, { method: "POST", body: formData });
-      if (!response.ok) throw new Error("Analiz sunucusu yanıt vermedi. (Backend uykuda olabilir, tekrar deneyin)");
+      if (!response.ok) throw new Error("Analiz sunucusu yanıt vermedi.");
       const data = await response.json();
       setResult(data);
     } catch (error: any) {
@@ -142,6 +162,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-slate-200">
+
+      {/* --- STRATEJİK YÜKLEME EKRANI (FULL SCREEN MODAL) --- */}
+      {loading && (
+        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+          <div className="loader-ring mb-8"></div>
+          <div className="h-24 flex items-center justify-center">
+            <p className="text-xl md:text-3xl font-medium text-slate-800 max-w-2xl animate-loading-text">
+              {loadingMessages[messageIndex]}
+            </p>
+          </div>
+          <p className="mt-8 text-slate-400 text-sm font-medium tracking-widest uppercase">
+            Analiz Katmanları İşleniyor...
+          </p>
+        </div>
+      )}
 
       {/* --- PREMIUM BANNER --- */}
       <div className="bg-slate-900 text-white text-center py-3 px-4 text-xs font-medium tracking-wide relative z-[60] flex items-center justify-center gap-2">
@@ -202,7 +237,7 @@ export default function Home() {
 
                     {activeTab === 'cv' && (
                         <button onClick={handleAnalyze} disabled={loading} className="w-full py-4 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-xl shadow-slate-200">
-                            {loading ? <><Loader2 className="animate-spin" size={20} /> Analiz Ediliyor...</> : 'Analizi Başlat'}
+                             Analizi Başlat
                         </button>
                     )}
                 </div>
@@ -228,7 +263,7 @@ export default function Home() {
                                 <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
                                     <div className="bg-amber-50 p-6 rounded-full"><Crown size={48} className="text-amber-500" /></div>
                                     <div><h3 className="text-xl font-bold text-slate-900">Profilin Hazır</h3><p className="text-slate-500 mt-2 text-sm">Cevapların kaydedildi. CV verilerinle sentezleniyor.</p></div>
-                                    <button onClick={handleAnalyze} disabled={loading} className="px-8 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">{loading ? <Loader2 className="animate-spin" /> : <>Sonuçları Göster <ArrowRight size={16} /></>}</button>
+                                    <button onClick={handleAnalyze} disabled={loading} className="px-8 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">Sonuçları Göster <ArrowRight size={16} /></button>
                                 </div>
                             )}
                         </div>
