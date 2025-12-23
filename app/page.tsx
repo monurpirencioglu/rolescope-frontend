@@ -80,7 +80,6 @@ export default function Home() {
     { id: 6, text: "Risk alma yaklaşımın nedir?", options: ["Büyük risk, büyük ödül. Kaybetmekten korkmam.", "Hesaplanmış riskleri alırım, B planım vardır.", "Mevcut yapıyı korumak benim için daha önemlidir.", "Riskten kaçınır, garanti ve denenmiş yolları seçerim."] },
     { id: 7, text: "Yöneticinden sert bir olumsuz geri bildirim (feedback) aldığında ne yaparsın?", options: ["Önce savunmaya geçerim, haksızlık yapıldığını düşünürüm.", "Duygusal olarak düşerim ama sonra toparlarım.", "Teşekkür eder, hemen düzeltmek için plan yaparım (Gelişim Odaklı).", "Verilerle hatanın bende olmadığını kanıtlamaya çalışırım."] },
     { id: 8, text: "Zaman çok kısıtlı ve elinde yeterli veri yok. Kritik bir karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime ve tecrübeme güvenir, kararı veririm.", "Kararı erteler, ne pahasına olursa olsun veri aramaya çalışırım.", "Hızlıca küçük bir deney (test) yapar, sonuca göre ilerlerim.", "Sorumluluğu tek başıma almaz, ekibe veya yöneticiye danışırım."] },
-    { id: 9, text: "Yeni ve zor bir teknoloji/konu öğrenmen gerektiğinde yöntemin nedir?", options: ["Dokümantasyonu baştan sona okurum (Teorik).", "Hemen bir proje yapmaya başlar, hata yaparak öğrenirim (Pratik).", "Bilen birine sorar veya eğitim videosu izlerim (Görsel/İşitsel).", "Önce mantığını kavrar, sonra detaylara inerim (Bütüncül)."] },
     { id: 10, text: "Bir takım içinde genellikle hangi rolü üstlenirsin?", options: ["Liderlik eden ve yön gösteren (Kaptan).", "Ortamı yumuşatan ve bağları kuran (Diplomat).", "Eksikleri gören ve eleştirel bakan (Kalite Kontrol).", "Verilen görevi sessizce ve eksiksiz yapan (Uygulayıcı)."] },
     { id: 11, text: "Seni iş hayatında en çok ne 'tüketir' (Burnout sebebi)?", options: ["Mikro yönetim ve sürekli kontrol edilmek.", "Yaptığım işin anlamsız olduğunu hissetmek.", "Aşırı belirsizlik ve kaos.", "Sürekli tekrarlayan, monoton işler."] },
     { id: 12, text: "Günün sonunda 'Bugün harika bir iş çıkardım' demeni sağlayan şey nedir?", options: ["Listemdeki tüm maddeleri bitirmek (Tamamlama Hissi).", "Çözülemeyen zor bir sorunu çözmek (Zafer Hissi).", "Ekibimden veya yöneticimden övgü almak (Takdir Hissi).", "Yeni ve yaratıcı bir şey ortaya koymak (Yaratıcılık Hissi)."] }
@@ -138,7 +137,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-slate-200">
       
       {loading && (
-        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500 text-left">
           <div className="loader-ring mb-8"></div>
           <div className="h-24 flex items-center justify-center">
             <p className="text-xl md:text-3xl font-medium text-slate-800 max-w-2xl animate-loading-text">
@@ -160,7 +159,7 @@ export default function Home() {
             <div className="bg-slate-900 text-white p-2 rounded-lg"><Layers size={24} /></div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-slate-900">RoleScope<span className="text-slate-400 font-light">AI</span></h1>
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Career Intelligence</p>
+              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold text-left">Career Intelligence</p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -172,7 +171,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-12 max-w-6xl">
+      <main className="container mx-auto px-6 py-12 max-w-6xl text-left">
         {!result ? (
             <div className="grid lg:grid-cols-12 gap-12">
                 <div className="lg:col-span-5 space-y-6">
@@ -189,26 +188,24 @@ export default function Home() {
                         <input type="file" onChange={(e: any) => setFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                         <div className="flex flex-col items-center text-center">
                             <div className="p-4 bg-white rounded-full mb-4 shadow-sm"><UploadCloud size={24} className="text-slate-600" /></div>
-                            <p className="font-medium text-slate-900">
-                              {file ? (file as any).name : (activeTab === 'cv' ? "CV Dosyasını Yükle" : "CV Dosyasını Yükle (DNA Testi için Opsiyonel)")}
-                            </p>
+                            <p className="font-medium text-slate-900">{file ? (file as any).name : (activeTab === 'cv' ? "CV Dosyasını Yükle (Zorunlu)" : "CV Dosyasını Yükle (DNA Testi için Opsiyonel)")}</p>
                         </div>
                     </div>
 
                     {activeTab === 'cv' && (
-                        <textarea placeholder="İş ilanı (Opsiyonel)" className="w-full h-32 p-4 border border-slate-200 rounded-xl outline-none text-sm bg-white" value={ilan} onChange={(e) => setIlan(e.target.value)} />
+                        <textarea placeholder="İş ilanı metni (Kopyalanamıyorsa unvan yazın)..." className="w-full h-32 p-4 border border-slate-200 rounded-xl outline-none text-sm bg-white" value={ilan} onChange={(e) => setIlan(e.target.value)} />
                     )}
 
                     {activeTab === 'cv' && (
                         <button onClick={handleAnalyze} disabled={!file} className="w-full py-4 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 disabled:opacity-50">
-                          {!file ? "Önce CV Yükleyin" : "Analizi Başlat"}
+                            {!file ? "Önce CV Yükleyin" : "Stratejik Analizi Başlat"}
                         </button>
                     )}
                 </div>
 
                 <div className="lg:col-span-7">
                     {activeTab === 'dna' && (
-                        <div className="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div className="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden h-full">
                             {!testCompleted ? (
                                 <div>
                                     <div className="flex justify-between items-center mb-8">
@@ -224,7 +221,7 @@ export default function Home() {
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <div className="bg-amber-50 p-6 rounded-full mb-6"><Crown size={48} className="text-amber-500" /></div>
+                                    <div className="bg-amber-50 p-6 rounded-full mb-6 text-center"><Crown size={48} className="text-amber-500 mx-auto" /></div>
                                     <h3 className="text-xl font-bold text-slate-900">Profilin Hazır</h3>
                                     <button onClick={handleAnalyze} className="mt-6 px-12 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2 mx-auto">Sonuçları Sentezle <ArrowRight size={16} /></button>
                                 </div>
@@ -235,19 +232,19 @@ export default function Home() {
             </div>
         ) : (
           /* SONUÇ EKRANI */
-          <div className="space-y-12 animate-fade-in">
+          <div className="space-y-12 animate-fade-in text-left">
             <button onClick={() => setResult(null)} className="text-xs font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest flex items-center gap-2">← Yeni Analiz</button>
 
             {activeTab === 'dna' ? (
               <div className="space-y-12">
                 {!file && (
                     <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-3 text-amber-800 text-sm max-w-4xl mx-auto">
-                        <div className="flex-shrink-0"><Info size={20} /></div>
+                        <Info size={20} />
                         <span>CV yüklenmediği için bu analiz sadece karakter DNA'nıza dayanmaktadır. Tam eşleşme için CV'nizi ekleyebilirsiniz.</span>
                     </div>
                 )}
                 <div className="text-center max-w-4xl mx-auto">
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase border border-slate-200 px-3 py-1 rounded-full">Kariyer Arketipi</span>
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase border border-slate-200 px-3 py-1 rounded-full text-center mx-auto">Kariyer Arketipi</span>
                     <h1 className="text-5xl md:text-6xl font-black text-slate-900 mt-6 mb-4 leading-tight">{result.arketip_profili?.ana}</h1>
                     
                     <div className="flex flex-wrap justify-center gap-4 mt-8">
@@ -262,14 +259,14 @@ export default function Home() {
                 </div>
 
                 <div className="max-w-4xl mx-auto px-6 text-center">
-                  <p className="text-2xl text-slate-700 leading-relaxed font-medium italic border-l-8 border-slate-900 pl-10 py-6 bg-white rounded-r-[3rem] shadow-sm italic">
+                  <p className="text-2xl text-slate-700 leading-relaxed font-medium italic border-l-8 border-slate-900 pl-10 py-6 bg-white rounded-r-[3rem] shadow-sm italic text-left">
                     "{result.karakter_ozeti}"
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8">
                   {Object.entries(result.calisma_dinamigi || {}).map(([key, value]: any) => (
-                    <div key={key} className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl">
+                    <div key={key} className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl text-left">
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">{key.replace('_', ' ')}</p>
                       <p className="text-xl font-bold leading-tight">{value}</p>
                     </div>
@@ -290,7 +287,7 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-                <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+                <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700 text-left">
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center">
                             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Uyum Skoru</h3>
@@ -299,24 +296,26 @@ export default function Home() {
                                 <div className="absolute inset-0 flex items-center justify-center text-5xl font-black">{result.uyum_skoru?.toplam}</div>
                             </div>
                         </div>
-                        <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-left">
+                        <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
                             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Yetkinlik Analizi</h3>
                             <div className="h-56">
-                                <Radar 
-                                    data={getRadarData(result.uyum_skoru?.alt_kirimlar)} 
-                                    options={{ 
-                                        maintainAspectRatio: false, 
-                                        scales: { 
-                                            r: { 
-                                                min: 40,
-                                                max: 100,
-                                                ticks: { display: False }, 
-                                                grid: { color: '#f1f5f9' } 
-                                            } 
-                                        }, 
-                                        plugins: { legend: { display: false } } 
-                                    }} 
-                                />
+                              <Radar 
+                                data={getRadarData(result.uyum_skoru?.alt_kirimlar)} 
+                                options={{ 
+                                  maintainAspectRatio: false, 
+                                  scales: { 
+                                    r: { 
+                                      min: 40, 
+                                      max: 100, 
+                                      ticks: { display: false }, 
+                                      grid: { color: '#f1f5f9' },
+                                      angleLines: { color: '#f1f5f9' },
+                                      pointLabels: { font: { size: 10, weight: '600' } }
+                                    } 
+                                  }, 
+                                  plugins: { legend: { display: false } } 
+                                }} 
+                              />
                             </div>
                         </div>
                     </div>
@@ -326,29 +325,29 @@ export default function Home() {
                             <div className="flex items-center gap-3 mb-4 font-black uppercase text-sm tracking-widest">{result.uyum_skoru?.toplam < 70 ? <ShieldAlert size={20} /> : <CheckCircle2 size={20} />} ATS Durumu</div>
                             <p className="text-lg font-medium">{result.ats_red_sebebi}</p>
                         </div>
-                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-left">
+                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-left text-left">
                             <div className="flex items-center gap-3 mb-6 font-black uppercase text-sm tracking-widest text-slate-900"><User size={20} /> Hiring Manager Notu</div>
-                            <p className="text-slate-700 font-medium mb-4 italic">"{result.hiring_manager_gozuyle?.ise_uygunluk}"</p>
-                            <div className="flex flex-wrap gap-2">{result.hiring_manager_gozuyle?.riskler?.map((r: string, i: number) => <span key={i} className="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-tighter">• {r}</span>)}</div>
+                            <p className="text-slate-700 font-medium mb-4 italic leading-relaxed">"{result.hiring_manager_gozuyle?.ise_uygunluk}"</p>
+                            <div className="flex flex-wrap gap-2 text-left">{result.hiring_manager_gozuyle?.riskler?.map((r: any, i: number) => <span key={i} className="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-tighter">• {r}</span>)}</div>
                         </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8 text-left">
-                        <div className="bg-blue-600 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                        <div className="bg-blue-600 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden text-left">
                             <div className="absolute top-6 right-6 bg-white/20 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">BETA PREMIUM</div>
-                            <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><DollarSign size={24} /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Maaş Pazarlığı Kozun</h3></div>
+                            <div className="flex items-center gap-4 mb-8 text-left"><div className="bg-white/10 p-3 rounded-2xl"><DollarSign size={24} /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Maaş Pazarlığı Kozun</h3></div>
                             <p className="text-2xl font-black leading-tight mb-8">"{result.pazarlik_stratejisi?.taktik_cumlesi}"</p>
-                            <div className="flex flex-wrap gap-2">{result.pazarlik_stratejisi?.masadaki_kozlarin?.map((k: string, i: number) => <span key={i} className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-xs font-bold">{k}</span>)}</div>
+                            <div className="flex flex-wrap gap-2 text-left">{result.pazarlik_stratejisi?.masadaki_kozlarin?.map((k: any, i: number) => <span key={i} className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-xs font-bold">{k}</span>)}</div>
                         </div>
-                        <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl">
-                            <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><Lightbulb size={24} className="text-amber-400" /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Teknik Kanıt Görevi</h3></div>
+                        <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl text-left">
+                            <div className="flex items-center gap-4 mb-8 text-left"><div className="bg-white/10 p-3 rounded-2xl"><Lightbulb size={24} className="text-amber-400" /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Teknik Kanıt Görevi</h3></div>
                             <h4 className="text-2xl font-bold mb-6 text-white leading-tight">{result.teknik_kanit_gorevi?.proje_fikri}</h4>
-                            <ul className="space-y-4">{result.teknik_kanit_gorevi?.nasil_yapilir?.map((step: string, i: number) => <li key={i} className="flex gap-4 text-slate-400 text-sm font-medium"><div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">{i+1}</div>{step}</li>)}</ul>
+                            <ul className="space-y-4 text-left">{result.teknik_kanit_gorevi?.nasil_yapilir?.map((step: any, i: number) => <li key={i} className="flex gap-4 text-slate-400 text-sm font-medium text-left"><div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">{i+1}</div>{step}</li>)}</ul>
                         </div>
                     </div>
                 </div>
             )}
-            <button onClick={() => setResult(null)} className="mx-auto block px-12 py-4 bg-slate-900 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">Yeniden Analiz Et</button>
+            <button onClick={() => setResult(null)} className="mx-auto block px-12 py-4 bg-slate-900 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all text-center">Yeniden Analiz Et</button>
           </div>
         )}
       </main>
