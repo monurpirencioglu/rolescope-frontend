@@ -1,15 +1,40 @@
 "use client";
 import { useState, useEffect } from 'react';
 
+// Grafik kütüphaneleri
 import {
-  Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale,
-  PointElement, LineElement, Filler
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler
 } from 'chart.js';
 import { Doughnut, Radar } from 'react-chartjs-2';
 
+// İkon Seti (Tüm profesyonel set yüklü)
 import {
-  ShieldAlert, TrendingUp, CheckCircle2, FileText, Layers, User,
-  ArrowRight, UploadCloud, DollarSign, Award, Crown, Unlock, Lightbulb 
+  ShieldAlert,
+  TrendingUp,
+  CheckCircle2,
+  FileText,
+  Layers,
+  User,
+  ArrowRight,
+  UploadCloud,
+  DollarSign,
+  Award,
+  Crown,
+  Unlock,
+  Lightbulb,
+  Info,
+  Briefcase,
+  Brain,
+  Target,
+  XCircle,
+  Loader2
 } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
@@ -54,8 +79,8 @@ export default function Home() {
     { id: 5, text: "Bir projede en sevdiğin aşama hangisidir?", options: ["Fikir bulma ve strateji (Vizyoner).", "Planlama ve mimariyi kurma (Mimar).", "Uygulama ve kodlama (Operasyonel).", "Test etme ve mükemmelleştirme (Detaycı)."] },
     { id: 6, text: "Risk alma yaklaşımın nedir?", options: ["Büyük risk, büyük ödül. Kaybetmekten korkmam.", "Hesaplanmış riskleri alırım, B planım vardır.", "Mevcut yapıyı korumak benim için daha önemlidir.", "Riskten kaçınır, garanti ve denenmiş yolları seçerim."] },
     { id: 7, text: "Yöneticinden sert bir olumsuz geri bildirim (feedback) aldığında ne yaparsın?", options: ["Önce savunmaya geçerim, haksızlık yapıldığını düşünürüm.", "Duygusal olarak düşerim ama sonra toparlarım.", "Teşekkür eder, hemen düzeltmek için plan yaparım (Gelişim Odaklı).", "Verilerle hatanın bende olmadığını kanıtlamaya çalışırım."] },
-    { id: 8, text: "Zaman çok kısıtlı ve elinde yeterli veri yok. Kritik bir karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime ve tecrübeme güvenir, kararı veririm.", "Kararı erteler, ne pahasına olursa olsun veri bulmaya çalışırım.", "Hızlıca küçük bir deney (test) yapar, sonuca göre ilerlerim.", "Sorumluluğu tek başıma almaz, ekibe veya yöneticiye danışırım."] },
-    { id: 9, text: "Yeni ve zor bir teknoloji/konu öğrenmen gerektiğinde yöntemin nedir?", options: ["Dokümantasyonu baştan sona okurum (Teorik).", "Hemen bir proye yapmaya başlar, hata yaparak öğrenirim (Pratik).", "Bilen birine sorar veya eğitim videosu izlerim (Görsel/İşitsel).", "Önce mantığını kavrar, sonra detaylara inerim (Bütüncül)."] },
+    { id: 8, text: "Zaman çok kısıtlı ve elinde yeterli veri yok. Kritik bir karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime ve tecrübeme güvenir, kararı veririm.", "Kararı erteler, ne pahasına olursa olsun veri aramaya çalışırım.", "Hızlıca küçük bir deney (test) yapar, sonuca göre ilerlerim.", "Sorumluluğu tek başıma almaz, ekibe veya yöneticiye danışırım."] },
+    { id: 9, text: "Yeni ve zor bir teknoloji/konu öğrenmen gerektiğinde yöntemin nedir?", options: ["Dokümantasyonu baştan sona okurum (Teorik).", "Hemen bir proje yapmaya başlar, hata yaparak öğrenirim (Pratik).", "Bilen birine sorar veya eğitim videosu izlerim (Görsel/İşitsel).", "Önce mantığını kavrar, sonra detaylara inerim (Bütüncül)."] },
     { id: 10, text: "Bir takım içinde genellikle hangi rolü üstlenirsin?", options: ["Liderlik eden ve yön gösteren (Kaptan).", "Ortamı yumuşatan ve bağları kuran (Diplomat).", "Eksikleri gören ve eleştirel bakan (Kalite Kontrol).", "Verilen görevi sessizce ve eksiksiz yapan (Uygulayıcı)."] },
     { id: 11, text: "Seni iş hayatında en çok ne 'tüketir' (Burnout sebebi)?", options: ["Mikro yönetim ve sürekli kontrol edilmek.", "Yaptığım işin anlamsız olduğunu hissetmek.", "Aşırı belirsizlik ve kaos.", "Sürekli tekrarlayan, monoton işler."] },
     { id: 12, text: "Günün sonunda 'Bugün harika bir iş çıkardım' demeni sağlayan şey nedir?", options: ["Listemdeki tüm maddeleri bitirmek (Tamamlama Hissi).", "Çözülemeyen zor bir sorunu çözmek (Zafer Hissi).", "Ekibimden veya yöneticimden övgü almak (Takdir Hissi).", "Yeni ve yaratıcı bir şey ortaya koymak (Yaratıcılık Hissi)."] }
@@ -164,7 +189,7 @@ export default function Home() {
                         <input type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                         <div className="flex flex-col items-center text-center">
                             <div className="p-4 bg-white rounded-full mb-4 shadow-sm"><UploadCloud size={24} className="text-slate-600" /></div>
-                            <p className="font-medium text-slate-900">{file ? file.name : "CV Dosyasını Yükle"}</p>
+                            <p className="font-medium text-slate-900">{file ? file.name : "CV Dosyasını Yükle (DNA Testi için Opsiyonel)"}</p>
                         </div>
                     </div>
 
@@ -197,7 +222,7 @@ export default function Home() {
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
                                     <div className="bg-amber-50 p-6 rounded-full mb-6"><Crown size={48} className="text-amber-500" /></div>
                                     <h3 className="text-xl font-bold text-slate-900">Profilin Hazır</h3>
-                                    <button onClick={handleAnalyze} className="mt-6 px-12 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">Sonuçları Sentezle <ArrowRight size={16} /></button>
+                                    <button onClick={handleAnalyze} className="mt-6 px-12 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2 mx-auto">Sonuçları Sentezle <ArrowRight size={16} /></button>
                                 </div>
                             )}
                         </div>
@@ -205,17 +230,22 @@ export default function Home() {
                 </div>
             </div>
         ) : (
-          /* SONUÇ EKRANI - TÜM CSS'LER GERİ GELDİ */
+          /* SONUÇ EKRANI */
           <div className="space-y-12 animate-fade-in">
             <button onClick={() => setResult(null)} className="text-xs font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest flex items-center gap-2">← Yeni Analiz</button>
 
             {activeTab === 'dna' ? (
               <div className="space-y-12">
+                {!file && (
+                    <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-3 text-amber-800 text-sm max-w-4xl mx-auto">
+                        <Info size={20} />
+                        <span>CV yüklenmediği için bu analiz sadece karakter DNA'nıza dayanmaktadır. Tam eşleşme için CV'nizi ekleyebilirsiniz.</span>
+                    </div>
+                )}
                 <div className="text-center max-w-4xl mx-auto">
                     <span className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase border border-slate-200 px-3 py-1 rounded-full">Kariyer Arketipi</span>
                     <h1 className="text-5xl md:text-6xl font-black text-slate-900 mt-6 mb-4 leading-tight">{result.arketip_profili?.ana}</h1>
                     
-                    {/* YENİ MESLEK ÖNERİLERİ - SENİN TASARIMINLA */}
                     <div className="flex flex-wrap justify-center gap-4 mt-8">
                         {result.arketip_profili?.mesleki_oneriler?.map((item: any, i: number) => (
                         <div key={i} className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left min-w-[220px]">
@@ -256,7 +286,6 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-                /* CV SONUÇLARI - MEVCUT ÇALIŞAN TASARIMIN */
                 <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
@@ -269,6 +298,32 @@ export default function Home() {
                         <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
                             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Yetkinlik Analizi</h3>
                             <div className="h-56"><Radar data={getRadarData(result.uyum_skoru?.alt_kirimlar)} options={{ maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }} /></div>
+                        </div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className={`p-8 rounded-3xl border-2 ${result.uyum_skoru?.toplam < 70 ? 'bg-red-50 border-red-100 text-red-900' : 'bg-emerald-50 border-emerald-100 text-emerald-900'}`}>
+                            <div className="flex items-center gap-3 mb-4 font-black uppercase text-sm tracking-widest">{result.uyum_skoru?.toplam < 70 ? <ShieldAlert size={20} /> : <CheckCircle2 size={20} />} ATS Durumu</div>
+                            <p className="text-lg font-medium">{result.ats_red_sebebi}</p>
+                        </div>
+                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6 font-black uppercase text-sm tracking-widest text-slate-900"><User size={20} /> Hiring Manager Notu</div>
+                            <p className="text-slate-700 font-medium mb-4 italic">"{result.hiring_manager_gozuyle?.ise_uygunluk}"</p>
+                            <div className="flex flex-wrap gap-2">{result.hiring_manager_gozuyle?.riskler?.map((r: string, i: number) => <span key={i} className="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-tighter">• {r}</span>)}</div>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className="bg-blue-600 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-6 right-6 bg-white/20 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">BETA PREMIUM</div>
+                            <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><DollarSign size={24} /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Maaş Pazarlığı Kozun</h3></div>
+                            <p className="text-2xl font-black leading-tight mb-8">"{result.pazarlik_stratejisi?.taktik_cumlesi}"</p>
+                            <div className="flex flex-wrap gap-2">{result.pazarlik_stratejisi?.masadaki_kozlarin?.map((k: string, i: number) => <span key={i} className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-xs font-bold">{k}</span>)}</div>
+                        </div>
+                        <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl">
+                            <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><Lightbulb size={24} className="text-amber-400" /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Teknik Kanıt Görevi</h3></div>
+                            <h4 className="text-2xl font-bold mb-6 text-white leading-tight">{result.teknik_kanit_gorevi?.proje_fikri}</h4>
+                            <ul className="space-y-4">{result.teknik_kanit_gorevi?.nasil_yapilir?.map((step: string, i: number) => <li key={i} className="flex gap-4 text-slate-400 text-sm font-medium"><div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">{i+1}</div>{step}</li>)}</ul>
                         </div>
                     </div>
                 </div>
