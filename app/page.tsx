@@ -310,7 +310,7 @@ export default function Home() {
                                       ticks: { display: false }, 
                                       grid: { color: '#f1f5f9' },
                                       angleLines: { color: '#f1f5f9' },
-                                      pointLabels: { font: { size: 10, weight: '600' } }
+                                      pointLabels: { font: { size: 10, weight: 600 } }
                                     } 
                                   }, 
                                   plugins: { legend: { display: false } } 
