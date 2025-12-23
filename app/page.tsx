@@ -1,80 +1,47 @@
 "use client";
-import { useState, useEffect } from 'react'; // useEffect eklendi
-
-// Grafik kütüphaneleri
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler
+import { useState, useEffect } from 'react';
+import { 
+  Chart as ChartJS, ArcElement, Tooltip, Legend, RadialLinearScale, 
+  PointElement, LineElement, Filler 
 } from 'chart.js';
 import { Doughnut, Radar } from 'react-chartjs-2';
-
-// Profesyonel İkon Seti
-import {
-  Briefcase,
-  Brain,
-  Target,
-  ShieldAlert,
-  TrendingUp,
-  CheckCircle2,
-  XCircle,
-  FileText,
-  Layers,
-  User,
-  ArrowRight,
-  UploadCloud,
-  Loader2,
-  DollarSign,
-  Award,
-  Crown,
-  Unlock,
-  Lightbulb 
+import { 
+  ShieldAlert, TrendingUp, CheckCircle2, Layers, User, 
+  ArrowRight, UploadCloud, DollarSign, Award, Crown, Lightbulb, FileText 
 } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, RadialLinearScale, PointElement, LineElement, Filler);
 
-// === STRATEJİK YÜKLEME MESAJLARI ===
 const loadingMessages = [
-  "Kariyer Stratejisti CV'ndeki teknik satır aralarını okuyor...",
-  "Performans Psikoloğu karakter testindeki zihinsel kalıpları ağırlıklandırıyor...",
-  "Potansiyel Avcısı, geçmişin ile gelecekteki 'en iyi versiyonun' arasındaki bağı kuruyor...",
-  "Silikon Vadisi standartlarında mülakat kozların ve risk analizin hazırlanıyor...",
-  "Stratejik yol haritan nihai formuna kavuşturuluyor..."
+  "Kariyer Stratejisti teknik satır aralarını okuyor...",
+  "Performans Psikoloğu zihinsel kalıpları ağırlıklandırıyor...",
+  "Potansiyel Avcısı 'en iyi versiyonun' ile bağ kuruyor...",
+  "Silikon Vadisi standartlarında yol haritan hazırlanıyor..."
 ];
 
 export default function Home() {
   const API_URL = "https://rolescope-backend.onrender.com";
 
-  // --- STATE ---
   const [file, setFile] = useState<File | null>(null);
   const [ilan, setIlan] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("cv");
-  const [messageIndex, setMessageIndex] = useState(0); // Mesaj indeksi için state
-
-  // DNA Test State
+  const [messageIndex, setMessageIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [testCompleted, setTestCompleted] = useState(false);
 
-  // --- LOADING MESAJ DÖNGÜSÜ ---
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (loading) {
       interval = setInterval(() => {
         setMessageIndex((prev) => (prev + 1) % loadingMessages.length);
-      }, 3000); // Her 3 saniyede bir mesajı değiştir
+      }, 3000);
     }
     return () => clearInterval(interval);
   }, [loading]);
 
-  // --- DNA TEST SORULARI ---
   const questions = [
     { id: 1, text: "Belirsiz bir durumla karşılaştığında ilk tepkin ne olur?", options: ["Hemen aksiyon alır, yolda düzeltirim (Hız Odaklı).", "Önce tüm verileri toplar, analiz ederim (Analitik).", "Ekibimle konuşur, ortak karar alırım (Demokratik).", "Yöneticimden net talimat beklerim (Hiyerarşik)."] },
     { id: 2, text: "Seni en çok ne motive eder?", options: ["Zor ve karmaşık problemleri çözmek.", "İnsanlara yardım etmek ve mentörlük.", "Net, ölçülebilir başarılar ve yüksek kazanç.", "Sistemi kurmak, optimize etmek ve düzeni sağlamak."] },
@@ -82,12 +49,12 @@ export default function Home() {
     { id: 4, text: "Hangi çalışma ortamı sana daha uygun?", options: ["Hızlı, kaotik, sürekli değişen (Startup Kültürü).", "Kuralları belli, net süreçleri olan (Kurumsal).", "Özgür, saatten bağımsız, sonuç odaklı (Remote/Freelance).", "Sessiz, odaklanmaya müsait, derin iş (Ar-Ge)."] },
     { id: 5, text: "Bir projede en sevdiğin aşama hangisidir?", options: ["Fikir bulma ve strateji (Vizyoner).", "Planlama ve mimariyi kurma (Mimar).", "Uygulama ve kodlama (Operasyonel).", "Test etme ve mükemmelleştirme (Detaycı)."] },
     { id: 6, text: "Risk alma yaklaşımın nedir?", options: ["Büyük risk, büyük ödül. Kaybetmekten korkmam.", "Hesaplanmış riskleri alırım, B planım vardır.", "Mevcut yapıyı korumak benim için daha önemlidir.", "Riskten kaçınır, garanti ve denenmiş yolları seçerim."] },
-    { id: 7, text: "Yöneticinden sert bir olumsuz geri bildirim (feedback) aldığında ne yaparsın?", options: ["Önce savunmaya geçerim, haksızlık yapıldığını düşünürüm.", "Duygusal olarak düşerim ama sonra toparlarım.", "Teşekkür eder, hemen düzeltmek için plan yaparım (Gelişim Odaklı).", "Verilerle hatanın bende olmadığını kanıtlamaya çalışırım."] },
-    { id: 8, text: "Zaman çok kısıtlı ve elinde yeterli veri yok. Kritik bir karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime ve tecrübeme güvenir, kararı veririm.", "Kararı erteler, ne pahasına olursa olsun veri bulmaya çalışırım.", "Hızlıca küçük bir deney (test) yapar, sonuca göre ilerlerim.", "Sorumluluğu tek başıma almaz, ekibe veya yöneticiye danışırım."] },
-    { id: 9, text: "Yeni ve zor bir teknoloji/konu öğrenmen gerektiğinde yöntemin nedir?", options: ["Dokümantasyonu baştan sona okurum (Teorik).", "Hemen bir proje yapmaya başlar, hata yaparak öğrenirim (Pratik).", "Bilen birine sorar veya eğitim videosu izlerim (Görsel/İşitsel).", "Önce mantığını kavrar, sonra detaylara inerim (Bütüncül)."] },
-    { id: 10, text: "Bir takım içinde genellikle hangi rolü üstlenirsin?", options: ["Liderlik eden ve yön gösteren (Kaptan).", "Ortamı yumuşatan ve bağları kuran (Diplomat).", "Eksikleri gören ve eleştirel bakan (Kalite Kontrol).", "Verilen görevi sessizce ve eksiksiz yapan (Uygulayıcı)."] },
-    { id: 11, text: "Seni iş hayatında en çok ne 'tüketir' (Burnout sebebi)?", options: ["Mikro yönetim ve sürekli kontrol edilmek.", "Yaptığım işin anlamsız olduğunu hissetmek.", "Aşırı belirsizlik ve kaos.", "Sürekli tekrarlayan, monoton işler."] },
-    { id: 12, text: "Günün sonunda 'Bugün harika bir iş çıkardım' demeni sağlayan şey nedir?", options: ["Listemdeki tüm maddeleri bitirmek (Tamamlama Hissi).", "Çözülemeyen zor bir sorunu çözmek (Zafer Hissi).", "Ekibimden veya yöneticimden övgü almak (Takdir Hissi).", "Yeni ve yaratıcı bir şey ortaya koymak (Yaratıcılık Hissi)."] }
+    { id: 7, text: "Yöneticinden sert bir geri bildirim aldığında ne yaparsın?", options: ["Önce savunmaya geçerim.", "Duygusal olarak düşerim.", "Hemen düzeltmek için plan yaparım.", "Verilerle hatanın bende olmadığını kanıtlarım."] },
+    { id: 8, text: "Kısıtlı zaman ve veriyle kritik karar vermen lazım. Ne yaparsın?", options: ["İçgüdülerime güvenirim.", "Ne pahasına olursa olsun veri ararım.", "Hızlıca küçük bir deney yaparım.", "Ekibe danışırım."] },
+    { id: 9, text: "Yeni bir teknoloji öğrenme yöntemin nedir?", options: ["Dokümantasyonu okurum.", "Proje yaparak öğrenirim.", "Eğitim videosu izlerim.", "Önce mantığını kavrarım."] },
+    { id: 10, text: "Takım içindeki rolün nedir?", options: ["Lider.", "Diplomat.", "Kalite Kontrol.", "Uygulayıcı."] },
+    { id: 11, text: "Seni en çok ne 'tüketir'?", options: ["Mikro yönetim.", "İşin anlamsızlığı.", "Aşırı belirsizlik.", "Monotonluk."] },
+    { id: 12, text: "Seni en çok tatmin eden şey nedir?", options: ["Listeyi bitirmek.", "Zor sorunu çözmek.", "Takdir almak.", "Yaratıcı bir şey sunmak."] }
   ];
 
   const handleOptionSelect = (option: any) => {
@@ -99,302 +66,200 @@ export default function Home() {
     }
   };
 
-  const handleFileChange = (e: any) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
-  };
-
   const handleAnalyze = async () => {
-    if (!file && activeTab === "cv") return alert("Lütfen devam etmeden önce CV dosyanızı yükleyin.");
+    if (!file && activeTab === "cv") return alert("Lütfen CV yükleyin.");
     setLoading(true);
-    setMessageIndex(0); // Mesaj döngüsünü sıfırla
     setResult(null);
 
     const formData = new FormData();
     if (file) formData.append("cv", file);
-    
-    if (activeTab === "cv") {
-        formData.append("ilan", ilan);
-    } else {
-        formData.append("answers", JSON.stringify(answers));
-    }
+    if (activeTab === "cv") formData.append("ilan", ilan);
+    else formData.append("answers", JSON.stringify(answers));
 
     try {
       const endpoint = activeTab === "cv" ? "/analiz-et" : "/analiz-dna";
       const response = await fetch(`${API_URL}${endpoint}`, { method: "POST", body: formData });
-      if (!response.ok) throw new Error("Analiz sunucusu yanıt vermedi.");
       const data = await response.json();
       setResult(data);
-    } catch (error: any) {
-      alert("Hata: " + error.message);
+
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag('event', 'analysis_success', { 'event_label': activeTab });
+      }
+    } catch (error) {
+      alert("Hata oluştu.");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- GRAFİK VERİLERİ ---
   const getScoreData = (score: number) => ({
     labels: ['Uyum', 'Eksik'],
-    datasets: [{
-      data: [score, 100 - score],
-      backgroundColor: ['#0f172a', '#e2e8f0'],
-      borderWidth: 0,
-    }]
+    datasets: [{ data: [score, 100 - score], backgroundColor: ['#0f172a', '#e2e8f0'], borderWidth: 0 }]
   });
 
   const getRadarData = (kirilimlar: any) => ({
     labels: ['Teknik', 'ATS Uyumu', 'Deneyim', 'Somut Çıktı'],
     datasets: [{
       label: 'Profil Analizi',
-      data: [
-        kirilimlar?.teknik_yetkinlik || 0,
-        kirilimlar?.ats_uyumu || 0,
-        kirilimlar?.deneyim_seniority || 0,
-        kirilimlar?.proje_odaklilik || 0
-      ],
-      backgroundColor: 'rgba(15, 23, 42, 0.2)',
-      borderColor: '#0f172a',
-      pointBackgroundColor: '#fff',
-      borderWidth: 2,
+      data: [kirilimlar?.teknik_yetkinlik || 0, kirilimlar?.ats_uyumu || 0, kirilimlar?.deneyim_seniority || 0, kirilimlar?.proje_odaklilik || 0],
+      backgroundColor: 'rgba(15, 23, 42, 0.2)', borderColor: '#0f172a', borderWidth: 2, pointBackgroundColor: '#fff'
     }]
   });
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-slate-200">
-
-      {/* --- STRATEJİK YÜKLEME EKRANI (FULL SCREEN MODAL) --- */}
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-100">
+      
       {loading && (
-        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
-          <div className="loader-ring mb-8"></div>
-          <div className="h-24 flex items-center justify-center">
-            <p className="text-xl md:text-3xl font-medium text-slate-800 max-w-2xl animate-loading-text">
-              {loadingMessages[messageIndex]}
-            </p>
-          </div>
-          <p className="mt-8 text-slate-400 text-sm font-medium tracking-widest uppercase">
-            Analiz Katmanları İşleniyor...
-          </p>
+        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-16 h-16 border-4 border-slate-900 border-t-transparent rounded-full animate-spin mb-8"></div>
+          <p className="text-2xl font-medium text-slate-800 animate-pulse">{loadingMessages[messageIndex]}</p>
         </div>
       )}
 
-      {/* --- PREMIUM BANNER --- */}
-      <div className="bg-slate-900 text-white text-center py-3 px-4 text-xs font-medium tracking-wide relative z-[60] flex items-center justify-center gap-2">
-        <span className="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">BETA</span>
-        <span>🚀 RoleScope AI: <span className="text-emerald-400 font-bold">Premium Kariyer Analizi & Maaş Stratejisi</span> sınırlı süre için ücretsiz.</span>
-      </div>
-
-      {/* HEADER */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="bg-slate-900 text-white p-2 rounded-lg"><Layers size={24} /></div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">RoleScope<span className="text-slate-400 font-light">AI</span></h1>
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Career Intelligence</p>
-            </div>
+            <h1 className="text-xl font-bold tracking-tight">RoleScope AI</h1>
           </div>
-          <div className="flex gap-4">
-             <button onClick={() => { setActiveTab("cv"); setResult(null); }} className={`text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === 'cv' ? 'text-slate-900 bg-slate-100 px-3 py-2 rounded-lg' : 'text-slate-400 hover:text-slate-600 px-3 py-2'}`}><FileText size={16} /> CV Analizi</button>
-             <button onClick={() => { setActiveTab("dna"); setResult(null); }} className={`text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === 'dna' ? 'text-slate-900 bg-slate-100 px-3 py-2 rounded-lg' : 'text-slate-400 hover:text-slate-600 px-3 py-2'}`}>
-                <Crown size={16} className={activeTab === 'dna' ? "text-amber-500" : "text-slate-400"} /> Kariyer Pusulası
-             </button>
+          <div className="flex gap-2">
+             <button onClick={() => { setActiveTab("cv"); setResult(null); }} className={`px-4 py-2 rounded-lg text-sm font-bold ${activeTab === 'cv' ? 'bg-slate-100 text-slate-900' : 'text-slate-400'}`}>CV Analizi</button>
+             <button onClick={() => { setActiveTab("dna"); setResult(null); }} className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${activeTab === 'dna' ? 'bg-slate-100 text-amber-600' : 'text-slate-400'}`}><Crown size={16} /> Kariyer DNA</button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-6 py-12 max-w-6xl">
-
-        {/* --- GİRİŞ EKRANI --- */}
-        {!result && (
-            <div className="grid lg:grid-cols-12 gap-12">
-                <div className="lg:col-span-5 space-y-6">
-                    <div>
-                        <h2 className="text-3xl font-light text-slate-900 mb-2 flex items-center gap-2">
-                            {activeTab === 'cv' ? 'Profesyonel CV Analizi' : <><span className="text-amber-500"><Crown size={28} /></span> Kariyer DNA Testi</>}
-                        </h2>
-                        <p className="text-slate-500 text-sm leading-relaxed">
-                            {activeTab === 'cv' ? "Yapay zeka ile CV'nizi ATS standartlarına göre test edin, mülakat risklerini görün ve maaş pazarlığı için strateji geliştirin." : "Kişilik özelliklerinizi bilimsel yöntemlerle analiz ederek size en uygun çalışma ortamını ve rolü keşfedin."}
-                        </p>
-                    </div>
-
-                    <div className="border-2 border-dashed border-slate-200 bg-slate-50/50 rounded-xl p-8 hover:border-slate-400 transition-all group cursor-pointer relative">
-                        <input type="file" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                        <div className="flex flex-col items-center text-center">
-                            <div className="p-4 bg-white rounded-full mb-4 shadow-sm"><UploadCloud size={24} className="text-slate-600" /></div>
-                            <p className="font-medium text-slate-900">CV Dosyasını Yükle</p>
-                            <p className="text-xs text-slate-400 mt-1">PDF formatı önerilir</p>
-                            {file && <div className="mt-4 flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100"><CheckCircle2 size={12} /> {file.name}</div>}
-                        </div>
-                    </div>
-
-                    {activeTab === 'cv' && (
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">İş İlanı (Opsiyonel)</label>
-                            <textarea placeholder="İlan metnini buraya yapıştırın..." className="w-full h-32 p-4 border border-slate-200 rounded-xl focus:ring-1 focus:ring-slate-900 outline-none resize-none text-sm bg-white" value={ilan} onChange={(e) => setIlan(e.target.value)} />
-                        </div>
-                    )}
-
-                    {activeTab === 'cv' && (
-                        <button onClick={handleAnalyze} disabled={loading} className="w-full py-4 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all disabled:opacity-70 flex items-center justify-center gap-2 shadow-xl shadow-slate-200">
-                             Analizi Başlat
-                        </button>
-                    )}
-                </div>
-
-                <div className="lg:col-span-7">
-                    {activeTab === 'dna' ? (
-                        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm h-full relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 -z-10"></div>
-                            {!testCompleted ? (
-                                <div>
-                                    <div className="flex justify-between items-center mb-8">
-                                        <span className="text-xs font-bold tracking-widest text-amber-600 uppercase flex items-center gap-1"><Crown size={12} /> Premium Envanter</span>
-                                        <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">{currentQuestion + 1} / {questions.length}</span>
-                                    </div>
-                                    <h3 className="text-xl font-medium text-slate-900 mb-8 leading-relaxed">{questions[currentQuestion].text}</h3>
-                                    <div className="space-y-3">
-                                        {questions[currentQuestion].options.map((option, idx) => (
-                                            <button key={idx} onClick={() => handleOptionSelect(option)} className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-slate-900 hover:bg-slate-50 transition-all text-slate-700 text-sm font-medium">{option}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
-                                    <div className="bg-amber-50 p-6 rounded-full"><Crown size={48} className="text-amber-500" /></div>
-                                    <div><h3 className="text-xl font-bold text-slate-900">Profilin Hazır</h3><p className="text-slate-500 mt-2 text-sm">Cevapların kaydedildi. CV verilerinle sentezleniyor.</p></div>
-                                    <button onClick={handleAnalyze} disabled={loading} className="px-8 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">Sonuçları Göster <ArrowRight size={16} /></button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="bg-slate-50 rounded-2xl h-full flex items-center justify-center border border-dashed border-slate-200 text-slate-400 text-sm p-8 text-center">
-                            <p>RoleScope AI, CV'nizi ve hedeflerinizi analiz etmek için hazır.</p>
-                        </div>
-                    )}
-                </div>
+        {!result ? (
+          <div className="grid lg:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <h2 className="text-5xl font-black text-slate-900 leading-tight">
+                {activeTab === 'cv' ? 'Mülakat Masasında Elini Güçlendir.' : 'DNA\'nı Keşfet, Kariyerini Domine Et.'}
+              </h2>
+              <div className="border-2 border-dashed border-slate-200 bg-white p-10 rounded-[2.5rem] text-center hover:border-slate-900 transition-all cursor-pointer relative">
+                <input type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 opacity-0 cursor-pointer" />
+                <UploadCloud size={48} className="mx-auto text-slate-300 mb-4" />
+                <p className="font-bold text-slate-600">{file ? file.name : "CV Dosyanı Buraya Bırak"}</p>
+              </div>
+              {activeTab === 'cv' && (
+                <>
+                  <textarea placeholder="Hedef iş ilanı (Opsiyonel)" className="w-full h-32 p-5 border border-slate-200 rounded-3xl bg-white outline-none" value={ilan} onChange={(e) => setIlan(e.target.value)} />
+                  <button onClick={handleAnalyze} className="w-full py-5 bg-slate-900 text-white rounded-3xl font-bold shadow-2xl">Analizi Başlat</button>
+                </>
+              )}
             </div>
-        )}
+            
+            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+              {activeTab === 'dna' && !testCompleted && (
+                <div className="animate-in slide-in-from-right duration-500">
+                  <p className="text-xs font-black text-blue-600 mb-4 uppercase">SORU {currentQuestion + 1} / 12</p>
+                  <h3 className="text-2xl font-bold mb-8">{questions[currentQuestion].text}</h3>
+                  <div className="space-y-3">
+                    {questions[currentQuestion].options.map((opt, i) => (
+                      <button key={i} onClick={() => handleOptionSelect(opt)} className="w-full text-left p-5 rounded-2xl border border-slate-100 hover:border-slate-900 font-medium transition-all">{opt}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {activeTab === 'dna' && testCompleted && (
+                <div className="text-center py-10">
+                  <Crown size={64} className="mx-auto text-amber-500 mb-6" />
+                  <h3 className="text-3xl font-bold mb-8">DNA Profilin Hazır.</h3>
+                  <button onClick={handleAnalyze} className="px-12 py-5 bg-slate-900 text-white rounded-3xl font-bold">Sonuçları Sentezle</button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-12 animate-in fade-in duration-1000">
+            {activeTab === 'dna' ? (
+              <div className="space-y-12">
+                <div className="text-center">
+                  <h1 className="text-6xl font-black text-slate-900 mb-6 tracking-tighter">{result.arketip_profili?.ana}</h1>
+                  <div className="flex flex-wrap justify-center gap-4 mt-10">
+                    {result.arketip_profili?.mesleki_oneriler?.map((item: any, i: number) => (
+                      <div key={i} className="bg-white border border-slate-200 p-6 rounded-[2rem] shadow-sm hover:border-slate-900 transition-all text-left min-w-[250px]">
+                        <p className="text-[10px] font-black text-blue-600 uppercase mb-2">{item.uygunluk} UYGUNLUK</p>
+                        <p className="text-xl font-bold text-slate-800 mb-2">{item.rol}</p>
+                        <p className="text-xs text-slate-500 leading-relaxed italic">{item.neden}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-        {/* --- SONUÇ EKRANI: CV ANALİZİ --- */}
-        {result && activeTab === 'cv' && (
-            <div className="space-y-8 animate-fade-in">
-                <button onClick={() => setResult(null)} className="text-xs font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest flex items-center gap-2">← Yeni Analiz</button>
+                <div className="max-w-4xl mx-auto">
+                  <p className="text-2xl text-slate-700 leading-relaxed font-medium italic border-l-8 border-slate-900 pl-10 py-6 bg-white rounded-r-[3rem] shadow-sm">
+                    "{result.karakter_ozeti}"
+                  </p>
+                </div>
 
-                {/* 1. ÜST PANEL */}
+                <div className="grid md:grid-cols-3 gap-8">
+                  {Object.entries(result.calisma_dinamigi || {}).map(([key, value]: any) => (
+                    <div key={key} className="bg-slate-900 text-white p-8 rounded-[3rem] shadow-2xl">
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">{key.replace('_', ' ')}</p>
+                      <p className="text-xl font-bold leading-tight">{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-[4rem] p-12 shadow-sm">
+                  <h3 className="text-4xl font-black text-slate-900 mb-12 flex items-center gap-4"><TrendingUp size={40} className="text-slate-900" /> Stratejik Yol Haritası</h3>
+                  <div className="grid md:grid-cols-3 gap-12">
+                    {['1_yil', '3_yil', '5_yil'].map((year) => (
+                      <div key={year} className="space-y-4">
+                        <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-900 font-black text-xl">{year[0]}</div>
+                        <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">{year.replace('_', ' ')} HEDEFİ</h4>
+                        <p className="text-slate-800 font-bold leading-relaxed">{result.kariyer_stratejisi?.[year]}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
                 <div className="grid md:grid-cols-3 gap-6">
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center relative">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Uyum Skoru</h3>
-                        <div className="w-32 h-32 relative">
-                            <Doughnut data={getScoreData(result.uyum_skoru?.toplam || 0)} options={{ cutout: '80%', plugins: { legend: { display: false } } }} />
-                            <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-slate-900">{result.uyum_skoru?.toplam}</div>
-                        </div>
+                  <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Uyum Skoru</h3>
+                    <div className="w-40 h-40 relative">
+                      <Doughnut data={getScoreData(result.uyum_skoru?.toplam || 0)} options={{ cutout: '85%', plugins: { legend: { display: false } } }} />
+                      <div className="absolute inset-0 flex items-center justify-center text-5xl font-black">{result.uyum_skoru?.toplam}</div>
                     </div>
-                    <div className="md:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Yetkinlik Analizi</h3>
-                        <div className="h-48 w-full flex justify-center">
-                            <Radar data={getRadarData(result.uyum_skoru?.alt_kirimlar)} options={{ maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }} />
-                        </div>
-                    </div>
+                  </div>
+                  <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Yetkinlik Analizi</h3>
+                    <div className="h-56"><Radar data={getRadarData(result.uyum_skoru?.alt_kirimlar)} options={{ maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }} /></div>
+                  </div>
                 </div>
-
-                {/* 2. ATS & KARAR */}
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className={`p-6 rounded-xl border ${result.uyum_skoru?.toplam < 70 ? 'bg-red-50 border-red-100 text-red-900' : 'bg-emerald-50 border-emerald-100 text-emerald-900'}`}>
-                        <div className="flex items-center gap-3 mb-2 font-bold">{result.uyum_skoru?.toplam < 70 ? <ShieldAlert size={20} /> : <CheckCircle2 size={20} />} ATS Durumu</div>
-                        <p className="text-sm opacity-90">{result.ats_red_sebebi}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4 font-bold text-slate-900"><User size={20} /> İşe Alım Kararı</div>
-                        <p className="text-sm mb-2"><span className="font-semibold">Karar:</span> {result.hiring_manager_gozuyle?.ise_uygunluk}</p>
-                        <div className="flex flex-col gap-1">{result.hiring_manager_gozuyle?.riskler?.map((r: string, i: number) => <span key={i} className="text-slate-500 text-xs flex items-center gap-2">• {r}</span>)}</div>
-                    </div>
-                </div>
-
-                {/* 3. STRATEJİ & TEKNİK GÖREV */}
-                <div className="grid md:grid-cols-2 gap-6">
-                    {/* MAAŞ KARTI */}
-                    <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm relative overflow-hidden">
-                         <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                            <Unlock size={10} /> BETA'DA AÇIK
-                         </div>
-                         <div className="flex items-center gap-2 mb-6 text-slate-900">
-                            <div className="bg-slate-100 p-2 rounded-lg"><DollarSign size={20} /></div>
-                            <h3 className="font-bold">Mülakat Masasındaki Gücün</h3>
-                        </div>
-                        <p className="text-lg text-slate-700 italic font-medium mb-6">"{result.pazarlik_stratejisi?.taktik_cumlesi}"</p>
-                        <div className="space-y-3">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Kullanabileceğin Kozlar</span>
-                            <div className="flex flex-wrap gap-2">
-                                {result.pazarlik_stratejisi?.masadaki_kozlarin?.map((k: string, i: number) => (
-                                    <span key={i} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium border border-slate-200">{k}</span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-900 text-white rounded-xl p-8 shadow-xl">
-                        <div className="flex items-center gap-2 mb-6 text-slate-400">
-                            <div className="bg-slate-800 p-2 rounded-lg"><Award size={20} /></div>
-                            <h3 className="font-bold uppercase tracking-widest text-xs">Teknik Kanıt Görevi</h3>
-                        </div>
-                        <h4 className="text-lg font-semibold mb-4 text-white">{result.teknik_kanit_gorevi?.proje_fikri}</h4>
-                        <ul className="space-y-3 text-slate-300 text-sm">
-                            {result.teknik_kanit_gorevi?.nasil_yapilir?.map((step: string, i: number) => (
-                                <li key={i} className="flex gap-3"><ArrowRight size={16} className="mt-0.5 flex-shrink-0 text-emerald-400" /> {step}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        )}
-
-        {/* --- SONUÇ EKRANI: DNA ANALİZİ --- */}
-        {result && activeTab === 'dna' && (
-            <div className="space-y-12 animate-fade-in relative">
-                 <button onClick={() => { setResult(null); setTestCompleted(false); setCurrentQuestion(0); }} className="text-xs font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest flex items-center gap-2">← Testi Yeniden Başlat</button>
-
-                <div className="absolute top-0 right-0">
-                    <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
-                        <Crown size={14} /> PREMIUM RAPOR
-                    </div>
-                </div>
-
-                <div className="text-center max-w-3xl mx-auto">
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase border border-slate-200 px-3 py-1 rounded-full">Kariyer Arketipi</span>
-                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 mt-6 mb-4">{result.arketip_profili?.ana}</h1>
-                    <p className="text-xl text-slate-500 font-light leading-relaxed">{result.karakter_ozeti}</p>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className={`p-8 rounded-3xl border-2 ${result.uyum_skoru?.toplam < 70 ? 'bg-red-50 border-red-100 text-red-900' : 'bg-emerald-50 border-emerald-100 text-emerald-900'}`}>
+                    <div className="flex items-center gap-3 mb-4 font-black uppercase text-sm tracking-widest">{result.uyum_skoru?.toplam < 70 ? <ShieldAlert size={20} /> : <CheckCircle2 size={20} />} ATS Durumu</div>
+                    <p className="text-lg font-medium">{result.ats_red_sebebi}</p>
+                  </div>
+                  <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3 mb-6 font-black uppercase text-sm tracking-widest text-slate-900"><User size={20} /> Hiring Manager Notu</div>
+                    <p className="text-slate-700 font-medium mb-4 italic">"{result.hiring_manager_gozuyle?.ise_uygunluk}"</p>
+                    <div className="flex flex-wrap gap-2">{result.hiring_manager_gozuyle?.riskler?.map((r: string, i: number) => <span key={i} className="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-tighter">• {r}</span>)}</div>
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
-                    <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
-                        <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2"><Layers size={20} /> Çalışma Dinamikleri</h3>
-                        <div className="space-y-5">
-                            {result.calisma_dinamigi && Object.entries(result.calisma_dinamigi).map(([key, value], index) => (
-                                <div key={index}>
-                                    <div className="flex justify-between text-[10px] text-slate-400 uppercase font-bold mb-2"><span>{key.split('_')[0]}</span><span>{key.split('_')[1]}</span></div>
-                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden relative"><div className="absolute top-0 left-0 h-full bg-slate-800 w-1/2 rounded-full"></div></div>
-                                    <p className="text-xs text-slate-500 mt-2 font-medium">{value as string}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-900 text-white rounded-xl p-8 shadow-xl">
-                        <h3 className="font-bold text-white mb-8 flex items-center gap-2"><TrendingUp size={20} /> Stratejik Yol Haritası</h3>
-                        <div className="space-y-8 relative">
-                            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-800"></div>
-                            {['1_yil', '3_yil', '5_yil'].map((year, i) => (
-                                <div key={i} className="relative pl-10">
-                                    <div className="absolute left-0 top-1 w-6 h-6 bg-slate-800 border border-slate-600 rounded-full flex items-center justify-center text-[10px] font-bold text-emerald-400">{year[0]}</div>
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{year.replace('_', '. ')} Hedefi</h4>
-                                    <p className="text-slate-300 text-sm leading-relaxed">{result.kariyer_stratejisi?.[year]}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  <div className="bg-blue-600 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-6 right-6 bg-white/20 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">BETA PREMIUM</div>
+                    <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><DollarSign size={24} /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Maaş Pazarlığı Kozun</h3></div>
+                    <p className="text-2xl font-black leading-tight mb-8">"{result.pazarlik_stratejisi?.taktik_cumlesi}"</p>
+                    <div className="flex flex-wrap gap-2">{result.pazarlik_stratejisi?.masadaki_kozlarin?.map((k: string, i: number) => <span key={i} className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-xs font-bold">{k}</span>)}</div>
+                  </div>
+                  <div className="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl">
+                    <div className="flex items-center gap-4 mb-8"><div className="bg-white/10 p-3 rounded-2xl"><Lightbulb size={24} className="text-amber-400" /></div><h3 className="text-xl font-bold uppercase tracking-tighter">Teknik Kanıt Görevi</h3></div>
+                    <h4 className="text-2xl font-bold mb-6 text-white leading-tight">{result.teknik_kanit_gorevi?.proje_fikri}</h4>
+                    <ul className="space-y-4">{result.teknik_kanit_gorevi?.nasil_yapilir?.map((step: string, i: number) => <li key={i} className="flex gap-4 text-slate-400 text-sm font-medium"><div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">{i+1}</div>{step}</li>)}</ul>
+                  </div>
                 </div>
-            </div>
+              </div>
+            )}
+            <button onClick={() => setResult(null)} className="mx-auto block px-12 py-4 bg-slate-900 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">Yeniden Analiz Et</button>
+          </div>
         )}
       </main>
     </div>
