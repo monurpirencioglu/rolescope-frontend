@@ -14,7 +14,7 @@ import {
 } from 'chart.js';
 import { Doughnut, Radar } from 'react-chartjs-2';
 
-// İkon Seti (Tüm profesyonel set yüklü)
+// İkon Seti
 import {
   ShieldAlert,
   TrendingUp,
@@ -96,7 +96,7 @@ export default function Home() {
   };
 
   const handleAnalyze = async () => {
-    if (!file && activeTab === "cv") return alert("Lütfen CV yükleyin.");
+    if (!file && activeTab === "cv") return alert("Lütfen devam etmeden önce bir CV yükleyin.");
     setLoading(true);
     setResult(null);
     const formData = new FormData();
@@ -178,7 +178,7 @@ export default function Home() {
                 <div className="lg:col-span-5 space-y-6">
                     <div>
                         <h2 className="text-3xl font-light text-slate-900 mb-2 flex items-center gap-2">
-                            {activeTab === 'cv' ? 'Mülakat Masasında Elini Güçlendir.' : <><span className="text-amber-500"><Crown size={28} /></span> Karakter DNA’na En Uygun Kariyer Yolunu Keşfet.</>}
+                            {activeTab === 'cv' ? 'Mülakat Stratejisi & CV Analizi' : <><span className="text-amber-500"><Crown size={28} /></span> Karakter DNA’na En Uygun Kariyer Yolunu Keşfet.</>}
                         </h2>
                         <p className="text-slate-500 text-sm leading-relaxed">
                             {activeTab === 'cv' ? "Yapay zeka ile CV'nizi ATS standartlarına göre test edin, mülakat risklerini görün ve maaş pazarlığı için strateji geliştirin." : "Kişilik özelliklerinizi bilimsel yöntemlerle analiz ederek size en uygun çalışma ortamını ve rolü keşfedin."}
@@ -189,22 +189,29 @@ export default function Home() {
                         <input type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                         <div className="flex flex-col items-center text-center">
                             <div className="p-4 bg-white rounded-full mb-4 shadow-sm"><UploadCloud size={24} className="text-slate-600" /></div>
-                            <p className="font-medium text-slate-900">{file ? file.name : "CV Dosyasını Yükle (DNA Testi için Opsiyonel)"}</p>
+                            <p className="font-medium text-slate-900">
+                              {file ? file.name : (activeTab === 'cv' ? "CV Dosyasını Yükleyin" : "CV Yükleyin (Opsiyonel)")}
+                            </p>
                         </div>
                     </div>
 
                     {activeTab === 'cv' && (
-                        <textarea placeholder="İş ilanı (Opsiyonel)" className="w-full h-32 p-4 border border-slate-200 rounded-xl outline-none text-sm bg-white" value={ilan} onChange={(e) => setIlan(e.target.value)} />
-                    )}
-
-                    {activeTab === 'cv' && (
-                        <button onClick={handleAnalyze} className="w-full py-4 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200">Analizi Başlat</button>
+                        <>
+                          <textarea placeholder="Hedef iş ilanı metni (Kopyalayamıyorsanız unvan yazın)..." className="w-full h-32 p-4 border border-slate-200 rounded-xl outline-none text-sm bg-white shadow-sm" value={ilan} onChange={(e) => setIlan(e.target.value)} />
+                          <button 
+                            onClick={handleAnalyze} 
+                            disabled={!file}
+                            className="w-full py-4 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {!file ? "Önce CV Yükleyin" : "Stratejik Analizi Başlat"}
+                          </button>
+                        </>
                     )}
                 </div>
 
                 <div className="lg:col-span-7">
                     {activeTab === 'dna' && (
-                        <div className="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div className="bg-white p-10 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden h-full">
                             {!testCompleted ? (
                                 <div>
                                     <div className="flex justify-between items-center mb-8">
@@ -258,7 +265,7 @@ export default function Home() {
                 </div>
 
                 <div className="max-w-4xl mx-auto px-6">
-                  <p className="text-2xl text-slate-700 leading-relaxed font-medium italic border-l-8 border-slate-900 pl-10 py-6 bg-white rounded-r-[3rem] shadow-sm italic">
+                  <p className="text-2xl text-slate-700 leading-relaxed font-medium italic border-l-8 border-slate-900 pl-10 py-6 bg-white rounded-r-[3rem] shadow-sm">
                     "{result.karakter_ozeti}"
                   </p>
                 </div>
@@ -297,7 +304,25 @@ export default function Home() {
                         </div>
                         <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
                             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Yetkinlik Analizi</h3>
-                            <div className="h-56"><Radar data={getRadarData(result.uyum_skoru?.alt_kirimlar)} options={{ maintainAspectRatio: false, scales: { r: { ticks: { display: false }, grid: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }} /></div>
+                            <div className="h-56">
+                              <Radar 
+                                data={getRadarData(result.uyum_skoru?.alt_kirimlar)} 
+                                options={{ 
+                                  maintainAspectRatio: false, 
+                                  scales: { 
+                                    r: { 
+                                      min: 40,
+                                      max: 100,
+                                      ticks: { display: false, stepSize: 15 }, 
+                                      grid: { color: '#f1f5f9', lineWidth: 2 },
+                                      angleLines: { color: '#f1f5f9' },
+                                      pointLabels: { font: { size: 10, weight: '600' }, color: '#64748b' }
+                                    } 
+                                  }, 
+                                  plugins: { legend: { display: false } } 
+                                }} 
+                              />
+                            </div>
                         </div>
                     </div>
                     
